@@ -25,11 +25,7 @@ test:
 server: 
 	go run main.go
 
+mock:
+	mockgen -destination db/mock/store.go -package mockdb github.com/zohaibAsif/simple_bank_management_system/db/sqlc Store
+
 .PHONY: postgres createdb dropdb migrateup migratedown sqlc remove test server
-
-
-
-# git config --global --unset-all user.name
-# git config --global --unset-all user.email
-# git config --global --add user.name <whatever>
-# git config --global --add user.email <whatever>
