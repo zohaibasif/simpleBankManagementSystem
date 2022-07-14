@@ -18,9 +18,9 @@ type createUserRequest struct {
 }
 
 type createUserResponse struct {
-	Username  string
-	FullName  string
-	Email     string
+	Username  string `json:"username" binding:"required,alphanum"`
+	FullName  string `json:"full_name" binding:"required"`
+	Email     string `json:"email" binding:"required,email"`
 	CreatedAt time.Time
 }
 
