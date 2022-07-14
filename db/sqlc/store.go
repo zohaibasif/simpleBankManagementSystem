@@ -90,8 +90,14 @@ func (s *SqlStore) TransferTx(ctx context.Context, args TransferTxParams) (Trans
 		// update accounts' balance
 		if args.FromAccountID > args.ToAccountID {
 			result.FromAccount, result.ToAccount, err = addBalance(ctx, q, args.FromAccountID, -args.Amount, args.ToAccountID, args.Amount)
+			if err != nil {
+				return err
+			}
 		} else {
 			result.ToAccount, result.FromAccount, err = addBalance(ctx, q, args.ToAccountID, args.Amount, args.FromAccountID, -args.Amount)
+			if err != nil {
+				return err
+			}
 		}
 		return nil
 	})

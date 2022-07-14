@@ -8,9 +8,9 @@ import (
 var alphabets = "abcdefghijklmnopqrstuvwxyz"
 var currencies = []string{USD, EUR, RUPEE}
 
-func RandomName() string {
+func RandomName(n int) string {
 	name := []byte{}
-	for i := 0; i < 6; i++ {
+	for i := 0; i < n; i++ {
 		name = append(name, alphabets[rand.Intn(len(alphabets))])
 	}
 	return string(name)
@@ -30,5 +30,5 @@ func RandomNumber(max int) int64 {
 }
 
 func RandomEmail() string {
-	return fmt.Sprintf("%v@gmail.com", RandomName())
+	return fmt.Sprintf("%v@gmail.com", RandomName(6))
 }
