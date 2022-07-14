@@ -1,11 +1,12 @@
 package util
 
 import (
+	"fmt"
 	"math/rand"
 )
 
 var alphabets = "abcdefghijklmnopqrstuvwxyz"
-var currencies = []string{"USD", "EUR", "RUPEE"}
+var currencies = []string{USD, EUR, RUPEE}
 
 func RandomName() string {
 	name := []byte{}
@@ -26,4 +27,8 @@ func RandomAmount() int64 {
 func RandomNumber(max int) int64 {
 	number := rand.Intn(max) + 1
 	return int64(number)
+}
+
+func RandomEmail() string {
+	return fmt.Sprintf("%v@gmail.com", RandomName())
 }
