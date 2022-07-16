@@ -10,11 +10,10 @@ import (
 
 type PasetoMaker struct {
 	paseto       *paseto.V2
-	symmetricKey []byte
+	symmetricKey string
 }
 
-func NewPasetoMaker(symmetricKey []byte) (Maker, error) {
-
+func NewPasetoMaker(symmetricKey string) (Maker, error) {
 	if len(symmetricKey) != chacha20poly1305.KeySize {
 		return nil, fmt.Errorf("invalid key size : should be at least %d characters", chacha20poly1305.KeySize)
 	}
@@ -31,14 +30,14 @@ func (pm *PasetoMaker) CreateToken(username string, duration time.Duration) (str
 		return "", err
 	}
 
-	return pm.paseto.Encrypt(pm.symmetricKey, payload, nil)
+	return pm.paseto.Encrypt([]byte(pm.symmetricKey), payload, nil)
 }
 
 func (pm *PasetoMaker) VerifyToken(token string) (*Payload, error) {
 
 	payload := &Payload{}
 
-	err := pm.paseto.Decrypt(token, pm.symmetricKey, payload, nil)
+	err := pm.paseto.Decrypt(token, []byte(pm.symmetricKey), payload, nil)
 	if err != nil {
 		return nil, Err_Invalid_Token
 	}
