@@ -33,16 +33,20 @@ func (s *Server) getEntry(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, entry)
 }
 
+type listEntryRequest struct {
+	Id int64 `json:"id" binding:"required,min=1"`
+}
+
 type listEntryQuerryParams struct {
 	PageId   int32 `form:"page_id" binding:"required,min=1"`
 	PageSize int32 `form:"page_size" binding:"required,min=5,max=10"`
 }
 
 func (s *Server) listEntries(ctx *gin.Context) {
-	uParams := getEntryRequest{}
+	req := listEntryRequest{}
 	qParams := listEntryQuerryParams{}
 
-	if err := ctx.ShouldBindUri(&uParams); err != nil {
+	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
@@ -53,7 +57,7 @@ func (s *Server) listEntries(ctx *gin.Context) {
 	}
 
 	args := db.ListEntriesParams{
-		AccountID: uParams.Id,
+		AccountID: req.Id,
 		Limit:     qParams.PageSize,
 		Offset:    (qParams.PageId - 1) * qParams.PageSize,
 	}

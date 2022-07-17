@@ -8,34 +8,6 @@ import (
 	db "github.com/zohaibAsif/simple_bank_management_system/db/sqlc"
 )
 
-type createTransferRequest struct {
-	FromAccountID int64 `json:"from_account_id" binding:"required,min=1"`
-	ToAccountID   int64 `json:"to_account_id" binding:"required,min=1,ne=from_account_id"`
-	Amount        int64 `json:"amount" binding:"required,min=1"`
-}
-
-func (s *Server) createTransfer(ctx *gin.Context) {
-	req := createTransferRequest{}
-	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, errorResponse(err))
-		return
-	}
-
-	args := db.TransferTxParams{
-		FromAccountID: req.FromAccountID,
-		ToAccountID:   req.ToAccountID,
-		Amount:        req.Amount,
-	}
-
-	transfer, err := s.store.TransferTx(ctx, args)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
-		return
-	}
-
-	ctx.JSON(http.StatusOK, transfer)
-}
-
 type getTransferRequest struct {
 	Id int64 `uri:"id" binding:"required,min=1"`
 }
@@ -63,7 +35,7 @@ func (s *Server) getTransfer(ctx *gin.Context) {
 
 type listTransfersRequest struct {
 	FromAccountID int64 `json:"from_account_id" binding:"required,min=1"`
-	ToAccountID   int64 `json:"to_account_id" binding:"required,min=1,ne=from_account_id"`
+	ToAccountID   int64 `json:"to_account_id" binding:"required,min=1"`
 }
 
 type listTransfersQuerryParams struct {

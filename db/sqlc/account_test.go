@@ -2,7 +2,6 @@ package db
 
 import (
 	"context"
-	"database/sql"
 	"math/rand"
 	"testing"
 	"time"
@@ -46,21 +45,6 @@ func TestCreateAccount(t *testing.T) {
 
 }
 
-func TestDeleteAccount(t *testing.T) {
-
-	account := createRandomAccount(t)
-
-	err := queries.DeleteAccount(context.Background(), account.ID)
-
-	require.NoError(t, err)
-
-	response, err := queries.GetAccount(context.Background(), account.ID)
-
-	require.Error(t, err)
-	require.EqualError(t, err, sql.ErrNoRows.Error())
-	require.Empty(t, response)
-}
-
 func TestGetAccount(t *testing.T) {
 
 	account := createRandomAccount(t)
@@ -75,13 +59,15 @@ func TestGetAccount(t *testing.T) {
 }
 
 func TestListAccounts(t *testing.T) {
+	var lastAccount Account
 	for i := 0; i < 10; i++ {
-		createRandomAccount(t)
+		lastAccount = createRandomAccount(t)
 	}
 
 	args := ListAccountsParams{
+		Owner:  lastAccount.Owner,
 		Limit:  5,
-		Offset: 5,
+		Offset: 0,
 	}
 
 	accounts, err := queries.ListAccounts(context.Background(), args)
@@ -90,30 +76,8 @@ func TestListAccounts(t *testing.T) {
 
 	require.NotEmpty(t, accounts)
 
-	require.Equal(t, len(accounts), 5)
-
 	for _, account := range accounts {
 		require.NotEmpty(t, account)
+		require.Equal(t, lastAccount.Owner, account.Owner)
 	}
-}
-
-func TestUpdateAccount(t *testing.T) {
-
-	account := createRandomAccount(t)
-
-	args := UpdateAccountParams{
-		ID:      account.ID,
-		Balance: 50,
-	}
-
-	response, err := queries.UpdateAccount(context.Background(), args)
-
-	require.NoError(t, err)
-
-	require.NotEmpty(t, account)
-
-	require.Equal(t, account.ID, response.ID)
-	require.Equal(t, response.Owner, account.Owner)
-	require.Equal(t, response.Currency, account.Currency)
-	require.Equal(t, args.Balance, response.Balance)
 }
